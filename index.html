@@ -20,7 +20,17 @@ button{padding:8px 15px;border-radius:8px;background:#1da1f2;color:white;border:
 <h3>Timeline</h3>
 <div id="timeline"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js/dist/supabase.min.js"></script>
+<script type="module">
+  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
+
+  const SUPABASE_URL = "https://zsyddrlpbpvugnkrsyzr.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpzeWRkcmxwYnB2dWdua3JzeXpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MTkxMDEsImV4cCI6MjA4OTE5NTEwMX0.unlN8MJKjUs92K9Osk5J-b3-1-PHZdpv3HcwCzd9b6Q";
+
+  const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+  // agora você pode usar supabase normalmente
+</script>
+  
 <script>
   // ❌ Cole aqui a URL e anon key do seu projeto Supabase
   const SUPABASE_URL = "https://zsyddrlpbpvugnkrsyzr.supabase.co";

@@ -20,6 +20,8 @@ button{padding:8px 15px;border-radius:8px;background:#1da1f2;color:white;border:
 <h3>Timeline</h3>
 <div id="timeline"></div>
 
+
+  
 <script type="module">
   import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
 
@@ -28,29 +30,21 @@ button{padding:8px 15px;border-radius:8px;background:#1da1f2;color:white;border:
 
   const supabase = createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-  // agora você pode usar supabase normalmente
-</script>
-  
-<script>
-  // ❌ Cole aqui a URL e anon key do seu projeto Supabase
-  const SUPABASE_URL = "https://zsyddrlpbpvugnkrsyzr.supabase.co";
-  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpzeWRkcmxwYnB2dWdua3JzeXpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MTkxMDEsImV4cCI6MjA4OTE5NTEwMX0.unlN8MJKjUs92K9Osk5J-b3-1-PHZdpv3HcwCzd9b6Q";
-
-  
-
-  // Função para carregar tweets
-  async function loadTweets(){
-    const { data: tweets, error } = await supabase
+  // função para carregar tweets
+  async function loadTweets() {
+    const { data, error } = await supabase
       .from('tweets')
       .select('*')
       .order('created_at', { ascending: false });
 
-    if(error){ console.log(error); return; }
+    if (error) {
+      console.log(error);
+      return;
+    }
 
     const timeline = document.getElementById('timeline');
     timeline.innerHTML = '';
-
-    tweets.forEach(t => {
+    data.forEach(t => {
       const div = document.createElement('div');
       div.className = 'tweet';
       div.innerHTML = `<b>${t.user}</b>: ${t.text} <br><small>${new Date(t.created_at).toLocaleString()}</small>`;
@@ -58,29 +52,28 @@ button{padding:8px 15px;border-radius:8px;background:#1da1f2;color:white;border:
     });
   }
 
-  // Função para postar tweet
-  async function postTweet(){
-  const input = document.getElementById('tweetInput');
-  const text = input.value.trim();
-  if(!text) return;
+  async function postTweet() {
+    const input = document.getElementById('tweetInput');
+    const text = input.value.trim();
+    if (!text) return;
 
-  const { data, error } = await supabase
-    .from('tweets')
-    .insert([{ user: "Usuário", text: text }]);
+    const { data, error } = await supabase
+      .from('tweets')
+      .insert([{ user: 'Usuário', text: text }]);
 
-  if(error){ 
-    console.log(error); 
-    alert("Erro ao enviar tweet: " + error.message);
-    return; 
+    if (error) {
+      console.log(error);
+      return;
+    }
+
+    input.value = '';
+    loadTweets();
   }
 
-  input.value = '';
-  loadTweets();
-}
-
-  // Carregar inicialmente e atualizar a cada 3s
   loadTweets();
   setInterval(loadTweets, 3000);
+
+  window.postTweet = postTweet; // deixa a função disponível pro onclick do botão
 </script>
 </body>
 </html>

@@ -26,7 +26,7 @@ button{padding:8px 15px;border-radius:8px;background:#1da1f2;color:white;border:
   const SUPABASE_URL = "https://zsyddrlpbpvugnkrsyzr.supabase.co";
   const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpzeWRkcmxwYnB2dWdua3JzeXpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MTkxMDEsImV4cCI6MjA4OTE5NTEwMX0.unlN8MJKjUs92K9Osk5J-b3-1-PHZdpv3HcwCzd9b6Q";
 
-  const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
   // Função para carregar tweets
   async function loadTweets(){

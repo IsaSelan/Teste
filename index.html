@@ -50,19 +50,23 @@ button{padding:8px 15px;border-radius:8px;background:#1da1f2;color:white;border:
 
   // Função para postar tweet
   async function postTweet(){
-    const input = document.getElementById('tweetInput');
-    const text = input.value.trim();
-    if(!text) return;
+  const input = document.getElementById('tweetInput');
+  const text = input.value.trim();
+  if(!text) return;
 
-    const { data, error } = await supabase
-      .from('tweets')
-      .insert([{ user: "Usuário", text: text }]);
+  const { data, error } = await supabase
+    .from('tweets')
+    .insert([{ user: "Usuário", text: text }]);
 
-    if(error){ console.log(error); return; }
-
-    input.value = '';
-    loadTweets();
+  if(error){ 
+    console.log(error); 
+    alert("Erro ao enviar tweet: " + error.message);
+    return; 
   }
+
+  input.value = '';
+  loadTweets();
+}
 
   // Carregar inicialmente e atualizar a cada 3s
   loadTweets();

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mini Twitter Firebase</title>
+</head>
+<body>
+<h2>Mini Twitter em tempo real</h2>
+
+<input type="text" id="tweetInput" placeholder="Digite seu tweet">
+<button onclick="postTweet()">Tweetar</button>
+
+<h3>Tweets:</h3>
+<div id="timeline"></div>
+
+<!-- Firebase -->
+<script type="module">
+
+$npm install -g firebase-tools
+
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
+import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+
+// 🔹 Coloque aqui os dados do seu Firebase
+const firebaseConfig = {
+    apiKey: "AIzaSyCjFxhlcs_YoPwUBdjGmE9Cz9I5_Ly130w",
+    authDomain: "teste-3d364.firebaseapp.com",
+    projectId: "teste-3d364",
+    storageBucket: "teste-3d364.firebasestorage.app",
+    messagingSenderId: "940727427327",
+    appId: "1:940727427327:web:108b47991968fa679aecca",
+    measurementId: "G-8MWX3E4KCL"
+  };
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+
+// Função para postar tweet
+async function postTweet(){
+    let text = document.getElementById("tweetInput").value;
+    if(!text) return;
+
+    await addDoc(collection(db, "tweets"), {
+        user: "Usuário",
+        text: text,
+        time: Date.now()
+    });
+
+    document.getElementById("tweetInput").value = "";
+}
+
+// Mostrar tweets em tempo real
+const timeline = document.getElementById("timeline");
+
+onSnapshot(collection(db, "tweets"), (snapshot) => {
+    timeline.innerHTML = ""; // limpa
+    snapshot.forEach((doc) => {
+        let t = doc.data();
+        let div = document.createElement("div");
+        div.textContent = `${t.user}: ${t.text}`;
+        timeline.appendChild(div);
+    });
+});
+</script>
+</body>
+</html>

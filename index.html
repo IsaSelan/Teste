@@ -3,65 +3,62 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Mini Twitter Firebase</title>
+<title>Mini Twitter Supabase</title>
 </head>
 <body>
-<h2>Mini Twitter em tempo real</h2>
+<h2>Mini Twitter</h2>
 
-<input type="text" id="tweetInput" placeholder="Digite seu tweet">
+<textarea id="tweetInput" placeholder="Digite seu tweet..."></textarea><br>
 <button onclick="postTweet()">Tweetar</button>
 
-<h3>Tweets:</h3>
+<h3>Timeline</h3>
 <div id="timeline"></div>
 
-<!-- Firebase -->
-<script type="module">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.26.0/dist/supabase.min.js"></script>
+<script>
+  // ❌ Substitua pelos dados do seu projeto
+  const SUPABASE_URL = "https://zsyddrlpbpvugnkrsyzr.supabase.co";
+  const SUPABASE_ANON_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InpzeWRkcmxwYnB2dWdua3JzeXpyIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzM2MTkxMDEsImV4cCI6MjA4OTE5NTEwMX0.unlN8MJKjUs92K9Osk5J-b3-1-PHZdpv3HcwCzd9b6Q";
 
-$npm install -g firebase-tools
+  const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js";
-import { getFirestore, collection, addDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js";
+  async function loadTweets(){
+    let { data: tweets, error } = await supabase
+      .from('tweets')
+      .select('*')
+      .order('created_at', { ascending: false });
 
-// 🔹 Coloque aqui os dados do seu Firebase
-const firebaseConfig = {
-    apiKey: "AIzaSyCjFxhlcs_YoPwUBdjGmE9Cz9I5_Ly130w",
-    authDomain: "teste-3d364.firebaseapp.com",
-    projectId: "teste-3d364",
-    storageBucket: "teste-3d364.firebasestorage.app",
-    messagingSenderId: "940727427327",
-    appId: "1:940727427327:web:108b47991968fa679aecca",
-    measurementId: "G-8MWX3E4KCL"
-  };
+    if(error){ console.log(error); return; }
 
-const app = initializeApp(firebaseConfig);
-const db = getFirestore(app);
+    const timeline = document.getElementById('timeline');
+    timeline.innerHTML = '';
 
-// Função para postar tweet
-async function postTweet(){
-    let text = document.getElementById("tweetInput").value;
+    tweets.forEach(t => {
+      const div = document.createElement('div');
+      div.innerHTML = `<b>${t.user}</b>: ${t.text} <i>(${new Date(t.created_at).toLocaleString()})</i>`;
+      timeline.appendChild(div);
+    });
+  }
+
+  async function postTweet(){
+    const input = document.getElementById('tweetInput');
+    const text = input.value.trim();
     if(!text) return;
 
-    await addDoc(collection(db, "tweets"), {
-        user: "Usuário",
-        text: text,
-        time: Date.now()
-    });
+    const { data, error } = await supabase
+      .from('tweets')
+      .insert([{ user: "Usuário", text: text }]);
 
-    document.getElementById("tweetInput").value = "";
-}
+    if(error){ console.log(error); return; }
 
-// Mostrar tweets em tempo real
-const timeline = document.getElementById("timeline");
+    input.value = '';
+    loadTweets();
+  }
 
-onSnapshot(collection(db, "tweets"), (snapshot) => {
-    timeline.innerHTML = ""; // limpa
-    snapshot.forEach((doc) => {
-        let t = doc.data();
-        let div = document.createElement("div");
-        div.textContent = `${t.user}: ${t.text}`;
-        timeline.appendChild(div);
-    });
-});
+  loadTweets();
+
+  // Atualiza automaticamente a timeline a cada 3s
+  setInterval(loadTweets, 3000);
 </script>
 </body>
 </html>
